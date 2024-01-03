@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session as SQLAlchemySession
-from models import create_user, authenticate_user, get_user_subscriptions, create_subscription, Session
+from models import create_user, authenticate_user, get_user_subscriptions, create_subscription, Session, delete_subscription
 
 if __name__ == '__main__':
     exit_program = False
@@ -51,8 +51,21 @@ Welcome:
 ''')
 
                                     if third_prompt == "1":
-                                        pass
-
+                                     # Delete Subscription
+                                        subscription_id_to_delete = input("Enter the Number of the subscription to delete: ")
+    
+                                        # Check if the input is not an empty string
+                                        if subscription_id_to_delete:
+                                            try:
+                                        # Attempt to convert subscription_id_to_delete to an integer
+                                                subscription_id_to_delete = int(subscription_id_to_delete)
+            
+                                        # Call the delete_subscription function
+                                                delete_subscription(authenticated_user, subscription_id_to_delete)
+                                            except ValueError:
+                                                print("Invalid input. Please enter a valid subscription ID.")
+                                        
+                                        
                                     elif third_prompt == "2":
                                         pass
 

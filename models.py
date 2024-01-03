@@ -88,7 +88,7 @@ def get_user_subscriptions(user):
         return []
 
 def create_subscription(user, service_name, cost, bill_date):
-    # Query the maximum subscription_id for the current user
+    # finds the number of subscriptions the users on
     max_subscription_id = session.query(func.max(Subscriptions.subscription_id)).filter_by(user_id=user.id).scalar()
 
     # If there are no existing subscriptions, set max_subscription_id to 0
@@ -119,6 +119,23 @@ def create_subscription(user, service_name, cost, bill_date):
         session.rollback()
         print(f"Error adding '{service_name}': {e}")
     
+def delete_subscription(user, subscription_id):
+    try:
+        # Query the subscription to be deleted
+        subscription_to_delete = session.query(Subscriptions).filter_by(user_id=user.id, subscription_id=subscription_id).one()
+
+        # Delete the subscription from the session
+        session.delete(subscription_to_delete)
+
+        # Commit the changes to the database
+        session.commit()
+        print(f"Subscription with ID '{subscription_id}' deleted successfully.")
+    except NoResultFound:
+        print(f"Error deleting subscription with ID '{subscription_id}': Subscription not found.")
+    except Exception as e:
+        # Rollback the transaction if there is an error
+        session.rollback()
+        print(f"Error deleting subscription with ID '{subscription_id}': {e}")
 
 
 engine = create_engine('sqlite:///Subscription_Tracker.db')
