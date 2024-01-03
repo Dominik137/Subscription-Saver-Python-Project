@@ -2,6 +2,10 @@ from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, 
 from sqlalchemy.orm import Session, declarative_base, validates, relationship
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
+import os
+
+def clear_console():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 Base = declarative_base()
 
@@ -17,12 +21,13 @@ class Users(Base):
         if not isinstance(value, str):
             raise ValueError(f"{key} must be a string.")
     
-        if len(value) < 3:
-            raise ValueError(f"{key} must be at least 3 characters long.")
-        
-        return value
+        if len(value) >= 3:
+            return value
+        else:
+            print(f"{key} must be at least 3 characters long.")
 
 def create_user(username, password):
+    clear_console()
     # Check for uniqueness separately
     existing_user = session.query(Users).filter_by(username=username).first()
     if existing_user:
@@ -46,6 +51,7 @@ def create_user(username, password):
         session.rollback()
 
 def authenticate_user(username, password):
+    clear_console()
     try:
         user = session.query(Users).filter_by(username=username, password=password).one()
         print(f"Login successful. Welcome, {username}!")
@@ -71,6 +77,7 @@ class Subscriptions(Base):
 subscription_id_counter = 1
 
 def get_user_subscriptions(user):
+    clear_console()
     try:
         # Refresh the user object to ensure it's bound to the session
         session.refresh(user)
@@ -80,7 +87,7 @@ def get_user_subscriptions(user):
         # ... (unchanged)
         # Print or process the subscriptions as needed
         for subscription in all_subscriptions:
-            print(f"{subscription.subscription_id}: Service, {subscription.Service_Name}, Cost: {subscription.Cost}, Bill Date: {subscription.Bill_date}")
+            print(f"\033[4m{subscription.subscription_id}: Service, {subscription.Service_Name}, Cost: {subscription.Cost}, Bill Date: {subscription.Bill_date}\033[0m")
 
         return all_subscriptions
     except Exception as e:
@@ -113,6 +120,7 @@ def create_subscription(user, service_name, cost, bill_date):
 
         # Commit the changes to the database
         session.commit()
+        clear_console()
         print(f"Your '{service_name}' Subscription with ID '{subscription_id}' was added successfully.")
     except Exception as e:
         # Rollback the transaction if there is an error
@@ -120,6 +128,7 @@ def create_subscription(user, service_name, cost, bill_date):
         print(f"Error adding '{service_name}': {e}")
     
 def delete_subscription(user, subscription_id):
+    clear_console()
     try:
         # Query the subscription to be deleted
         subscription_to_delete = session.query(Subscriptions).filter_by(user_id=user.id, subscription_id=subscription_id).one()
@@ -136,6 +145,42 @@ def delete_subscription(user, subscription_id):
         # Rollback the transaction if there is an error
         session.rollback()
         print(f"Error deleting subscription with ID '{subscription_id}': {e}")
+
+def edit_subscription(user, subscription_id, new_service_name=None, new_cost=None, new_bill_date=None):
+    try:
+        # Query the subscription to be edited
+        subscription_to_edit = session.query(Subscriptions).filter_by(user_id=user.id, subscription_id=subscription_id).one()
+
+        # Update the subscription attributes with new values if provided
+        if new_service_name is not None:
+            if new_service_name == '':
+                pass
+            else:
+                subscription_to_edit.Service_Name = new_service_name
+
+        if new_cost is not None:
+            if new_cost == '':
+                # Do something appropriate when new_cost is an empty string (e.g., set to None or a default value)
+                pass
+            else:
+                subscription_to_edit.Cost = float(new_cost)
+                
+        if new_bill_date is not None:
+            if new_bill_date == '':
+                pass
+            else:
+                subscription_to_edit.Bill_date = new_bill_date
+
+        # Commit the changes to the database
+        session.commit()
+        clear_console()
+        print(f"Subscription with ID '{subscription_id}' edited successfully.")
+    except NoResultFound:
+        print(f"Error editing subscription with ID '{subscription_id}': Subscription not found.")
+    except Exception as e:
+        # Rollback the transaction if there is an error
+        session.rollback()
+        print(f"Error editing subscription with ID '{subscription_id}': {e}")
 
 
 engine = create_engine('sqlite:///Subscription_Tracker.db')
