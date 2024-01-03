@@ -7,63 +7,86 @@ if __name__ == '__main__':
 
     while not exit_program:
 
-            if not authenticated_user:
-                first_prompt = input("""
+        if not authenticated_user:
+            first_prompt = input("""
 Welcome:
 1) Create Profile
 2) Log in
 3) Exit
 """)
-                
-                if first_prompt == "1":
-                    # Create a new profile
+            
+            if first_prompt == "1":
+                # Create a new profile
+                while True:
                     username = input("Create Username: ")
                     password = input('Create Password: ')
+                    
                     create_user(username, password)
-                    print("User created successfully.")
+                    break
 
-                elif first_prompt == "2":
-                    # Log in
+            elif first_prompt == "2":
+                # Log in
+                while True:
                     username = input("Enter username: ")
                     password = input("Enter password: ")
                     authenticated_user = authenticate_user(username, password)
 
-                    if not authenticated_user:
-                        print("Login failed. Invalid username or password.")
-                        
-                elif first_prompt == "3":
-                    # Exit program
-                    print("Exiting program.")
-                    exit_program = True
-            else:
-                second_prompt = input('''
+                    if authenticated_user:
+                        while True:
+                            second_prompt = input('''
 1) See all Subscriptions
 2) Add new Subscription
 3) Logout
 ''')
+                            if second_prompt == "1":
+                                # Show all subscriptions
+                                subscriptions = get_user_subscriptions(authenticated_user)
+                                if not subscriptions:
+                                    print("No subscriptions saved.")
+                                while True:
+                                    third_prompt = input('''
+1) Delete Subscription
+2) Edit Subscription
+3) Exit 
+''')
 
-                if second_prompt == "1":
-                    # Show all subscriptions
-                    subscriptions = get_user_subscriptions(authenticated_user)
-                    if not subscriptions:
-                        print("No subscriptions saved.")
+                                    if third_prompt == "1":
+                                        pass
 
-                elif second_prompt == "2":
-                    # Add new subscription
-                    Service_Name = input("Enter Service name: ")
-                    Cost = float(input("Enter cost: "))  # Assuming cost is a float field
-                    Bill_date = int(input("Enter the day of the month you will be billed: "))
-                    create_subscription(authenticated_user, Service_Name, Cost, Bill_date)
+                                    elif third_prompt == "2":
+                                        pass
 
-                elif second_prompt == "3":
-                    # Logout
-                    authenticated_user = None
-                    print("Logged out successfully.")
+                                    elif third_prompt == "3":
+                                        break
 
-                elif second_prompt == "4":
-                    # Exit program
-                    print("Exiting program.")
-                    exit_program = True
+                            elif second_prompt == "2":
+                                # Add new subscription
+                                Service_Name = input("Enter Service name: ")
+                                Cost = float(input("Enter cost: "))  # Assuming cost is a float field
+                                Bill_date = int(input("Enter the day of the month you will be billed: "))
+                                create_subscription(authenticated_user, Service_Name, Cost, Bill_date)
+                                
 
-                else:
-                    print("Invalid choice. Please try again.")
+                            elif second_prompt == "3":
+                                # Logout
+                                authenticated_user = None
+                                print("Logged out successfully.")
+                                break  # Exit the second loop and go back to the main menu  
+
+                            else:
+                                print("Not valid selection")
+
+                        if authenticated_user is None:
+                            break
+
+                    else:
+                        # print("Login failed. Invalid username or password.")
+                        break
+
+            elif first_prompt == "3":
+                # Exit program
+                print("Exiting program.")
+                exit_program = True
+        
+            else:
+                print('Not valid selection')
