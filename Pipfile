@@ -5,6 +5,8 @@ name = "pypi"
 
 [packages]
 sqlalchemy = "*"
+asciichartpy = "*"
+pillow = "*"
 
 [dev-packages]
 

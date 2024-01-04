@@ -3,6 +3,11 @@ from sqlalchemy.orm import Session, declarative_base, validates, relationship
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
 import os
+import asciichartpy
+from colorama import Fore, Style
+from termplotlib import barh
+import calendar
+from datetime import datetime, date
 
 def clear_console():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -70,24 +75,104 @@ class Subscriptions(Base):
     subscription_id = Column(Integer, unique=False, nullable=False)  # New unique identifier for each subscription
     Service_Name = Column(String, nullable=False)
     Cost = Column(Float, nullable=False)
-    Bill_date = Column(String, nullable=False)
+    Bill_date = Column(String)
     user_id = Column(Integer, ForeignKey('Users.id'), nullable=False)
 
-# Global variable for subscription_id counter
-subscription_id_counter = 1
 
-def get_user_subscriptions(user):
+
+# def plot_subscription_costs_terminal(subscriptions):
+#     # Extracting service names and corresponding costs
+#     service_names = [subscription.Service_Name for subscription in subscriptions]
+#     costs = [subscription.Cost for subscription in subscriptions]
+
+#     # Creating a bar plot
+#     chart = asciichartpy.plot(costs, {"height": 10, "offset": 3, "padding": 5, "colors": [asciichartpy.blue]})
+
+#     # Displaying the plot with service names as labels
+#     print(f"{Fore.GREEN}\nSubscription Costs\n{Style.RESET_ALL}")
+#     for i, service_name in enumerate(service_names):
+#         print(f"{service_name.ljust(20)}: {chart[i]}")
+
+from datetime import datetime
+import calendar
+
+# ... (existing code)
+
+
+
+def display_due_dates_calendar(user):
     clear_console()
+
     try:
         # Refresh the user object to ensure it's bound to the session
         session.refresh(user)
         # Query all subscriptions for the logged-in user
         all_subscriptions = session.query(Subscriptions).filter_by(user_id=user.id).all()
 
+        # Get the current month and year
+        today = datetime.today()
+        year = today.year
+        month = today.month
+
+        # Initialize a list to store the bill dates
+        bill_dates = []
+
+        # Extract the bill dates from subscriptions
+        for subscription in all_subscriptions:
+            due_date_str = subscription.Bill_date
+            if due_date_str.isdigit():
+                bill_dates.append(int(due_date_str))
+
+        # Print the header
+        print(f"\033[1m{calendar.month_name[month]} {year}\033[0m")
+
+        # Print the day names
+        print("Mo Tu We Th Fr Sa Su")
+
+        # Get the weekday of the first day of the month
+        first_weekday = datetime(year, month, 1).weekday()
+
+        # Print leading spaces for the first week
+        print("   " * first_weekday, end="")
+
+        # Loop through the days of the month
+        for day in range(1, calendar.monthrange(year, month)[1] + 1):
+            # Check if the day is a bill date and highlight it
+            if day in bill_dates:
+                print(f"\033[91m{day:2}\033[0m", end=" ")
+            else:
+                print(f"{day:2}", end=" ")
+
+            # Move to the next line for the next week
+            if (day + first_weekday) % 7 == 0:
+                print()
+
+        print()  # Print a newline after the calendar
+
+        return all_subscriptions
+    except Exception as e:
+        print(f"Error displaying due dates calendar: {e}")
+        return []
+
+
+subscription_id_counter = 1
+
+
+
+def get_user_subscriptions(user):
+    
+    try:
+        # Refresh the user object to ensure it's bound to the session
+        session.refresh(user)
+        # Query all subscriptions for the logged-in user
+        all_subscriptions = session.query(Subscriptions).filter_by(user_id=user.id).all()
+        
         # ... (unchanged)
         # Print or process the subscriptions as needed
         for subscription in all_subscriptions:
-            print(f"\033[4m{subscription.subscription_id}: Service, {subscription.Service_Name}, Cost: {subscription.Cost}, Bill Date: {subscription.Bill_date}\033[0m")
+            print(f"{Fore.GREEN}\033[4m{subscription.subscription_id}: Service, {subscription.Service_Name}, Cost: {subscription.Cost}, Bill Date: {subscription.Bill_date}\033[0m{Style.RESET_ALL}")
+        
+
 
         return all_subscriptions
     except Exception as e:

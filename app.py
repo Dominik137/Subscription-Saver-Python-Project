@@ -1,22 +1,48 @@
 from sqlalchemy.orm import Session as SQLAlchemySession
-from models import create_user, authenticate_user, get_user_subscriptions, create_subscription, Session, delete_subscription, edit_subscription
+from models import create_user, authenticate_user, get_user_subscriptions, create_subscription, Session, delete_subscription, edit_subscription, display_due_dates_calendar
 import os
+from PIL import Image
+import ascii_magic
+from ascii_magic import AsciiArt, from_image, Back, Front
+from colorama import Fore, Style, init
 
+GREEN = '\033[92m'
 def clear_console():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 if __name__ == '__main__':
     exit_program = False
     authenticated_user = None
+    
+    # terminal art
+    # my_art = from_image('12345.jpg')
+    
+    # my_art.to_terminal(columns=80, width_ratio=2)
+
 
     while not exit_program:
 
         if not authenticated_user:
-            first_prompt = input("""
-Welcome:
+
+            
+
+            
+
+            first_prompt = input(f"""
+            {Fore.GREEN}
+Welcome to
+ __       _                   _       _   _               __                      
+/ _\_   _| |__  ___  ___ _ __(_)_ __ | |_(_) ___  _ __   / _\ __ ___   _____ _ __ 
+\ \| | | | '_ \/ __|/ __| '__| | '_ \| __| |/ _ \| '_ \  \ \ / _` \ \ / / _ \ '__|
+_\ \ |_| | |_) \__ \ (__| |  | | |_) | |_| | (_) | | | | _\ \ (_| |\ V /  __/ |   
+\__/\__,_|_.__/|___/\___|_|  |_| .__/ \__|_|\___/|_| |_| \__/\__,_| \_/ \___|_|   
+                               |_|                                                
+ 
+{Style.RESET_ALL}                               
 1) Create Profile
 2) Log in
 3) Exit
+
 """)
             
             if first_prompt == "1":
@@ -47,7 +73,13 @@ Welcome:
 ''')
                             if second_prompt == "1":
                                 # Show all subscriptions
+                                
+                                display_due_dates_calendar(authenticated_user)
+                                print('')
+
                                 subscriptions = get_user_subscriptions(authenticated_user)
+                                
+                                
                                 if not subscriptions:
                                     print("No subscriptions saved.")
                                 while True:
@@ -137,4 +169,5 @@ Welcome:
                 exit_program = True
         
             else:
+                clear_console()
                 print('Not valid selection')
