@@ -5,6 +5,7 @@ from PIL import Image
 import ascii_magic
 from ascii_magic import AsciiArt, from_image, Back, Front
 from colorama import Fore, Style, init
+from termplotlib import barh
 
 GREEN = '\033[92m'
 def clear_console():
@@ -13,21 +14,15 @@ def clear_console():
 if __name__ == '__main__':
     exit_program = False
     authenticated_user = None
-    
+    subscriptions = []
     # terminal art
     # my_art = from_image('12345.jpg')
     
     # my_art.to_terminal(columns=80, width_ratio=2)
-
-
     while not exit_program:
 
         if not authenticated_user:
-
-            
-
-            
-
+            clear_console()            
             first_prompt = input(f"""
             {Fore.GREEN}
 Welcome to
@@ -76,7 +71,6 @@ _\ \ |_| | |_) \__ \ (__| |  | | |_) | |_| | (_) | | | | _\ \ (_| |\ V /  __/ |
                                 
                                 display_due_dates_calendar(authenticated_user)
                                 print('')
-
                                 subscriptions = get_user_subscriptions(authenticated_user)
                                 
                                 
@@ -143,7 +137,6 @@ _\ \ |_| | |_) \__ \ (__| |  | | |_) | |_| | (_) | | | | _\ \ (_| |\ V /  __/ |
                                 Cost = float(input("Enter cost: "))  # Assuming cost is a float field
                                 Bill_date = int(input("Enter the day of the month you will be billed: "))
                                 create_subscription(authenticated_user, Service_Name, Cost, Bill_date)
-                                
 
                             elif second_prompt == "3":
                                 # Logout

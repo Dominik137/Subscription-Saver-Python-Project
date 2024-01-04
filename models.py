@@ -3,23 +3,25 @@ from sqlalchemy.orm import Session, declarative_base, validates, relationship
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
 import os
-import asciichartpy
+from asciichartpy import plot
 from colorama import Fore, Style
 from termplotlib import barh
 import calendar
 from datetime import datetime, date
 
+
 def clear_console():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 Base = declarative_base()
-
+# always start with a Base
 
 class Users(Base):
     __tablename__ = "Users"
     id = Column(Integer, primary_key=True)
     username = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
+# Creating our User table
 
     @validates('username', 'password')
     def validate_string(self, key, value):
@@ -30,6 +32,8 @@ class Users(Base):
             return value
         else:
             print(f"{key} must be at least 3 characters long.")
+# Making validations for our Username and passwords, making sure they are strings and that they're atleast 3 
+# charachters long
 
 def create_user(username, password):
     clear_console()
@@ -65,10 +69,6 @@ def authenticate_user(username, password):
         print("Login failed. Invalid username or password.")
         return None  # Return None if authentication fails
     
-
-    
-
-
 class Subscriptions(Base):
     __tablename__ = "Subscriptions"
     id = Column(Integer, primary_key=True)
@@ -77,13 +77,21 @@ class Subscriptions(Base):
     Cost = Column(Float, nullable=False)
     Bill_date = Column(String)
     user_id = Column(Integer, ForeignKey('Users.id'), nullable=False)
-
+# This is to make our subscription table
 
 
 # def plot_subscription_costs_terminal(subscriptions):
+#     if not subscriptions:
+#         print("No subscriptions available.")
+#         return
+
 #     # Extracting service names and corresponding costs
 #     service_names = [subscription.Service_Name for subscription in subscriptions]
 #     costs = [subscription.Cost for subscription in subscriptions]
+
+#     if not costs:
+#         print("No costs available.")
+#         return
 
 #     # Creating a bar plot
 #     chart = asciichartpy.plot(costs, {"height": 10, "offset": 3, "padding": 5, "colors": [asciichartpy.blue]})
@@ -93,12 +101,7 @@ class Subscriptions(Base):
 #     for i, service_name in enumerate(service_names):
 #         print(f"{service_name.ljust(20)}: {chart[i]}")
 
-from datetime import datetime
-import calendar
-
-# ... (existing code)
-
-
+# attempt at a graph function, not working
 
 def display_due_dates_calendar(user):
     clear_console()
@@ -157,8 +160,6 @@ def display_due_dates_calendar(user):
 
 subscription_id_counter = 1
 
-
-
 def get_user_subscriptions(user):
     
     try:
@@ -178,6 +179,7 @@ def get_user_subscriptions(user):
     except Exception as e:
         print(f"Error retrieving subscriptions: {e}")
         return []
+
 
 def create_subscription(user, service_name, cost, bill_date):
     # finds the number of subscriptions the users on
