@@ -22,7 +22,7 @@ if __name__ == '__main__':
     while not exit_program:
 
         if not authenticated_user:
-            clear_console()            
+                        
             first_prompt = input(f"""
             {Fore.GREEN}
 Welcome to
