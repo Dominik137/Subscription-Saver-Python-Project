@@ -20,5 +20,7 @@ python app.py
 From here you can play around with the app!
 
 Start by making an account and then logging in:
+
 From there you can make your first subscription and then view them in your list of subscriptions!:
+
 You can edit or delete any subscriptions as well!
