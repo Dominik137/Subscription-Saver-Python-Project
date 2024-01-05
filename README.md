@@ -10,8 +10,10 @@ Fork and clone this Repo:
 
 Open it in your Code editor:
 
-Type in terminal $"pipenv install" to install dependencies:
+In the Terminal run these commands:
 
-Then in terminal type $"pipenv shell" to enter a virtual environment:
-
-Finally, Type in terminal $"python app.py" to get started!
+```
+pipenv install
+pipenv shell
+python app.py
+```
